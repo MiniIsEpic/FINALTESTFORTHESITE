@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KittyCraft SMP 🌸 — The World's Cutest Minecraft Server</title>
+  <meta name="description" content="KittyCraft is a 100% cozy, grief-free Minecraft SMP dressed up in Hello Kitty and Sanrio style. Java + Bedrock crossplay. Join 500+ players!" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+      background: #fff0f8;
+      color: #2d1b35;
+    }
+
+    /* ── Animations ── */
+    @keyframes bob {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-18px) rotate(3deg); }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+    @keyframes rgb-shift {
+      0%   { color: #ff3c6e; }
+      14%  { color: #ff8c00; }
+      28%  { color: #ffd700; }
+      42%  { color: #39d353; }
+      57%  { color: #00cfff; }
+      71%  { color: #a855f7; }
+      85%  { color: #ff3c6e; }
+      100% { color: #ff3c6e; }
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+      50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(80px) scale(0.85); }
+      to   { opacity: 1; transform: translateX(0) scale(1); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── Utilities ── */
+    .gradient-text {
+      background: linear-gradient(135deg, #db2777, #a855f7, #db2777);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+
+    .animate-bob { animation: bob 2.4s ease-in-out infinite; }
+
+    .paw-deco {
+      position: absolute;
+      font-size: 80px;
+      opacity: 0.05;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Navbar ── */
+    #navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      height: 64px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(18px);
+      border-bottom: 1.5px solid transparent;
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    #navbar.scrolled {
+      background: rgba(255,255,255,0.92);
+      border-bottom-color: hsl(340 50% 88%);
+      box-shadow: 0 2px 22px rgba(219,39,119,0.12);
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-icon {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#fce7f3,#ede9fe);
+      border: 2px solid hsl(340 50% 88%);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(219,39,119,0.15);
+      animation: bob 2.4s ease-in-out infinite;
+    }
+    .nav-logo-icon img { width: 36px; height: 36px; object-fit: contain; }
+    .nav-title { font-size: 1.1rem; font-weight: 900; color: #db2777; line-height: 1.1; }
+    .nav-sub { font-size: 0.7rem; font-weight: 700; color: #9878a8; letter-spacing: 0.1em; text-transform: uppercase; }
+    .nav-links { display: flex; align-items: center; gap: 4px; list-style: none; }
+    .nav-links a {
+      text-decoration: none;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #5b3f6b;
+      transition: background 0.15s, color 0.15s;
+    }
+    .nav-links a:hover { background: hsl(340 80% 92%); color: #db2777; }
+    .online-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: #f0fdf4;
+      border: 1.5px solid #bbf7d0;
+      color: #15803d;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .online-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      animation: pulse-glow 1.5s ease-in-out infinite;
+    }
+    @media (max-width: 768px) {
+      #navbar { padding: 0 1.2rem; }
+      .nav-links { display: none; }
+    }
+
+    /* ── Buttons ── */
+    .kitty-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, #db2777, #a855f7);
+      color: white;
+      box-shadow: 0 4px 20px rgba(219,39,119,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-decoration: none;
+      font-family: 'Nunito', sans-serif;
+    }
+    .kitty-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(219,39,119,0.45); }
+    .kitty-btn:hover .btn-label { animation: rgb-shift 1.2s linear infinite; }
+    .kitty-btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 24px;
+      border-radius: 16px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      background: white;
+      border: 2px solid hsl(340 50% 88%);
+      color: #2d1b35;
+      text-decoration: none;
+      font-family: 'Nunito', sans-serif;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .kitty-btn-outline:hover { border-color: #f472b6; background: #fff0f8; }
+
+    /* ── IP Chip ── */
+    .ip-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.8);
+      border: 1.5px solid hsl(340 50% 88%);
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #2d1b35;
+      backdrop-filter: blur(8px);
+    }
+
+    /* ── Hero ── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding-top: 64px;
+      background: linear-gradient(135deg, #fff0f8 0%, #fce7f3 40%, #ede9fe 100%);
+    }
+    .hero-bg-img {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: url('hero-bg.png');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      opacity: 0.18;
+    }
+    .hero-blob-1 { position: absolute; top: 80px; left: 40px; width: 288px; height: 288px; border-radius: 50%; background: radial-gradient(circle, #fce7f3, transparent); opacity: 0.3; pointer-events: none; z-index: 0; }
+    .hero-blob-2 { position: absolute; bottom: 80px; right: 40px; width: 256px; height: 256px; border-radius: 50%; background: radial-gradient(circle, #ede9fe, transparent); opacity: 0.25; pointer-events: none; z-index: 0; }
+    .hero-inner {
+      position: relative; z-index: 10;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 48px;
+      padding: 4rem 4rem;
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    @media (max-width: 900px) {
+      .hero-inner { flex-direction: column; padding: 3rem 1.5rem; }
+    }
+    .hero-content { flex: 1; min-width: 0; max-width: 560px; animation: fadeInUp 0.7s ease both; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      border-radius: 999px;
+      padding: 6px 16px;
+      margin-bottom: 20px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: linear-gradient(135deg, #fce7f3, #ede9fe);
+      border: 1.5px solid hsl(340 50% 88%);
+      color: #db2777;
+    }
+    .hero-h1 {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      color: #2d1b35;
+      margin-bottom: 16px;
+    }
+    .hero-desc {
+      font-size: 1rem;
+      color: #5b3f6b;
+      line-height: 1.75;
+      margin-bottom: 32px;
+      max-width: 440px;
+    }
+    .hero-btns { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 32px; }
+    .hero-ip-row { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+    .hero-ip-label { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #9878a8; }
+    .hero-stats { display: flex; gap: 32px; flex-wrap: wrap; }
+    .hero-stat-n { display: block; font-size: 1.5rem; font-weight: 900; color: #db2777; line-height: 1; }
+    .hero-stat-l { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #9878a8; }
+
+    /* ── Hero image card ── */
+    .hero-img-side { flex: 1; min-width: 0; max-width: 520px; width: 100%; animation: fadeInUp 0.7s 0.2s ease both; }
+    .hero-image-frame {
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid hsl(340 50% 88%);
+      box-shadow: 0 16px 60px rgba(219,39,119,0.22);
+      position: relative;
+    }
+    .hero-image-frame img { width: 100%; display: block; }
+    .hero-img-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 20px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+    }
+    .hero-img-play {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem;
+      background: linear-gradient(135deg,#db2777,#a855f7);
+      color: white;
+      flex-shrink: 0;
+    }
+    .hero-tag {
+      position: absolute;
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 16px;
+      border-radius: 16px;
+      background: white;
+      border: 2px solid hsl(340 50% 88%);
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    /* ── Features ── */
+    #features {
+      position: relative;
+      padding: 96px 4rem;
+      overflow: hidden;
+    }
+    @media (max-width: 768px) { #features { padding: 64px 1.5rem; } }
+    .features-bg { position: absolute; inset: 0; z-index: 0; background: linear-gradient(160deg, #fff0f8 0%, #fce7f3 20%, #f0e6ff 40%, #fef3c7 55%, #e0f7ff 70%, #f0fdf4 85%, #fff0f8 100%); }
+    .features-blob { position: absolute; border-radius: 50%; pointer-events: none; }
+    .features-inner { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 16px;
+      font-size: 0.7rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      color: #db2777;
+    }
+    .section-h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      color: #2d1b35;
+      margin-bottom: 12px;
+    }
+    .section-sub { font-size: 1rem; color: #5b3f6b; margin-bottom: 56px; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+    @media (max-width: 1100px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .features-grid { grid-template-columns: 1fr; } }
+    .feature-card {
+      padding: 24px;
+      border-radius: 20px;
+      border: 2px solid;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.22s, box-shadow 0.22s;
+    }
+    .feature-card:hover { transform: translateY(-6px); }
+    .feature-card-bar { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
+    .feature-icon {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.7);
+    }
+    .feature-title { font-size: 1rem; font-weight: 900; margin-bottom: 8px; }
+    .feature-desc { font-size: 0.875rem; line-height: 1.6; color: #5b3f6b; }
+
+    /* ── Gallery ── */
+    #gallery {
+      position: relative;
+      padding: 96px 4rem;
+      overflow: hidden;
+    }
+    @media (max-width: 768px) { #gallery { padding: 64px 1.5rem; } }
+    .gallery-bg { position: absolute; inset: 0; z-index: 0; background: linear-gradient(135deg, #ff6eb4 0%, #fce7f3 20%, #e879f9 40%, #f0abfc 55%, #c084fc 70%, #ddd6fe 85%, #fbcfe8 100%); }
+    .gallery-inner { position: relative; z-index: 10; max-width: 1280px; margin: 0 auto; }
+    .gallery-h2 { color: white; text-shadow: 0 2px 20px rgba(219,39,119,0.4); }
+    .gallery-sub { color: rgba(255,255,255,0.9); margin-bottom: 56px; }
+    .gallery-featured {
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      border: 2px solid rgba(255,255,255,0.5);
+      box-shadow: 0 20px 60px rgba(219,39,119,0.5), 0 0 0 3px rgba(255,255,255,0.4);
+    }
+    .gallery-featured img { width: 100%; max-height: 420px; object-fit: cover; display: block; }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+    .gallery-card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid rgba(255,255,255,0.5);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+    .gallery-card:hover { transform: scale(1.04) rotate(1deg); }
+    .gallery-card img { width: 100%; height: 208px; object-fit: cover; transition: transform 0.3s; display: block; }
+    .gallery-card:hover img { transform: scale(1.05); }
+    .gallery-caption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .gallery-card:hover .gallery-caption { opacity: 1; }
+    .gallery-caption p { font-size: 0.75rem; font-weight: 700; color: #db2777; margin: 0; }
+    .float-emoji {
+      position: absolute;
+      pointer-events: none;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    /* ── Join ── */
+    #join-us {
+      position: relative;
+      padding: 96px 4rem;
+      overflow: hidden;
+    }
+    @media (max-width: 768px) { #join-us { padding: 64px 1.5rem; } }
+    .join-bg { position: absolute; inset: 0; z-index: 0; background: linear-gradient(135deg, #fff0f8, #ede9fe); }
+    .join-inner {
+      position: relative; z-index: 10;
+      max-width: 1280px; margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+    }
+    @media (max-width: 900px) { .join-inner { grid-template-columns: 1fr; } }
+    .join-step { display: flex; align-items: flex-start; gap: 16px; }
+    .step-num {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg,#db2777,#a855f7);
+      color: white; font-weight: 900; font-size: 0.875rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-title { font-size: 0.875rem; font-weight: 900; color: #2d1b35; margin-bottom: 4px; }
+    .step-desc { font-size: 0.875rem; color: #5b3f6b; }
+    .join-imgs { display: flex; flex-direction: column; gap: 20px; }
+    .join-imgs-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .join-img-frame { border-radius: 20px; overflow: hidden; border: 2px solid hsl(340 50% 88%); box-shadow: 0 8px 30px rgba(219,39,119,0.15); }
+    .join-img-frame img { width: 100%; display: block; }
+    .join-img-thumb { border-radius: 12px; overflow: hidden; border: 2px solid hsl(340 50% 88%); }
+    .join-img-thumb img { width: 100%; height: 160px; object-fit: cover; display: block; }
+
+    /* ── Footer ── */
+    footer {
+      padding: 40px 4rem;
+      text-align: center;
+      background: linear-gradient(135deg, #db2777, #a855f7);
+    }
+    .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .footer-name { font-size: 1.1rem; font-weight: 900; color: rgba(255,255,255,0.95); }
+    .footer-sub { font-size: 0.875rem; color: rgba(255,255,255,0.75); }
+    .footer-copy { font-size: 0.75rem; color: rgba(255,255,255,0.55); margin-top: 8px; }
+
+    /* ── Floating Widget ── */
+    #floating-widget {
+      position: fixed;
+      right: 20px; bottom: 32px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 12px;
+      opacity: 0;
+      transform: translateX(80px) scale(0.85);
+      pointer-events: none;
+      transition: opacity 0.35s, transform 0.35s;
+    }
+    #floating-widget.visible {
+      opacity: 1;
+      transform: translateX(0) scale(1);
+      pointer-events: all;
+    }
+    .widget-card {
+      background: white;
+      border: 2px solid hsl(340 50% 88%);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(219,39,119,0.28);
+      max-width: 220px;
+    }
+    .widget-header {
+      background: linear-gradient(135deg,#db2777,#a855f7);
+      padding: 10px 16px;
+    }
+    .widget-header p { color: white; font-weight: 900; font-size: 0.875rem; margin: 0; }
+    .widget-body { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .widget-ip { font-size: 0.75rem; font-weight: 700; color: #5b3f6b; }
+    .widget-sub { font-size: 0.75rem; color: #9878a8; }
+    .widget-btn {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: linear-gradient(135deg,#db2777,#a855f7);
+      color: white;
+      font-weight: 800;
+      font-size: 0.75rem;
+      border: none;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: transform 0.15s;
+    }
+    .widget-btn:hover { transform: translateY(-1px); }
+    .widget-btn:hover .btn-label { animation: rgb-shift 1.2s linear infinite; }
+    .scroll-top-btn {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#db2777,#a855f7);
+      border: 2px solid rgba(255,255,255,0.4);
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 16px rgba(219,39,119,0.35);
+      transition: transform 0.15s;
+    }
+    .scroll-top-btn:hover { transform: scale(1.1); }
+
+    /* ── Scroll fade-in ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.65s ease, transform 0.65s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───── NAVBAR ───── -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <img src="hellokitty-logo.png" alt="Hello Kitty" />
+    </div>
+    <div>
+      <span class="nav-title">KittyCraft 🌸</span>
+      <span class="nav-sub">The Cutest SMP ✨</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#join-us">Join Us</a></li>
+  </ul>
+  <div class="online-badge">
+    <span class="online-dot"></span>
+    🟢 Online
+  </div>
+</nav>
+
+<!-- ───── HERO ───── -->
+<section id="hero">
+  <div class="hero-bg-img"></div>
+  <div class="hero-blob-1"></div>
+  <div class="hero-blob-2"></div>
+  <span class="paw-deco" style="top:15%;left:5%;transform:rotate(-20deg)">🐾</span>
+  <span class="paw-deco" style="top:70%;right:8%;transform:rotate(15deg);font-size:60px">🐾</span>
+
+  <div class="hero-inner">
+    <div class="hero-content">
+      <div class="hero-badge"><span>🌸</span> Season 3 — Now Live! ✨</div>
+      <h1 class="hero-h1">The World's <span class="gradient-text">Cutest</span><br>Minecraft SMP 🐱</h1>
+      <p class="hero-desc">Step into a 100% cozy, grief-free Minecraft survival world dressed up in Hello Kitty and Sanrio style 🌸 Custom textures, protected claims, sweet economy, and the friendliest community online. 💕</p>
+      <div class="hero-btns">
+        <button class="kitty-btn" onclick="downloadInstaller(this)">
+          <span class="btn-label">📥 Get Installer</span>
+        </button>
+        <a href="https://discord.gg/kittycraft" target="_blank" rel="noopener noreferrer" class="kitty-btn-outline">
+          💬 Join Discord
+        </a>
+      </div>
+      <div class="hero-ip-row">
+        <span class="hero-ip-label">Server IP</span>
+        <div class="ip-chip"><span>🐱</span><span>kittycraft.online</span></div>
+      </div>
+      <div class="hero-stats">
+        <div><span class="hero-stat-n">500+</span><span class="hero-stat-l">Active Players 💖</span></div>
+        <div><span class="hero-stat-n">Grief-Free</span><span class="hero-stat-l">Always Safe 🛡️</span></div>
+        <div><span class="hero-stat-n">Java + Bedrock</span><span class="hero-stat-l">Crossplay 🎮</span></div>
+      </div>
+    </div>
+
+    <div class="hero-img-side">
+      <div style="position:relative">
+        <div class="hero-image-frame">
+          <img src="hellokitty-banner.jpg" alt="Hello Kitty Minecraft" />
+          <div class="hero-img-caption">
+            <div class="hero-img-play">▶</div>
+            <div>
+              <p style="font-size:0.75rem;font-weight:900;color:#2d1b35;margin:0">🌸 Your Sanrio Adventure Awaits</p>
+              <p style="font-size:0.75rem;color:#9878a8;margin:0">All Sanrio characters available as skins ✨</p>
+            </div>
+          </div>
+        </div>
+        <div class="hero-tag" style="top:-16px;right:-16px">
+          <span>🌸</span><span style="font-size:0.75rem;font-weight:700;color:#db2777">Grief-free 💕</span>
+        </div>
+        <div class="hero-tag" style="bottom:-24px;left:-16px">
+          <span>💖</span><span style="font-size:0.75rem;font-weight:700;color:#a855f7">500+ players 🎮</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FEATURES ───── -->
+<section id="features">
+  <div class="features-bg"></div>
+  <div class="features-blob" style="top:0;right:0;width:320px;height:320px;background:radial-gradient(circle,#f9a8d4,transparent);filter:blur(60px);opacity:0.4"></div>
+  <div class="features-blob" style="bottom:0;left:0;width:320px;height:320px;background:radial-gradient(circle,#c084fc,transparent);filter:blur(60px);opacity:0.35"></div>
+  <div class="features-blob" style="top:50%;left:50%;transform:translate(-50%,-50%);width:256px;height:256px;background:radial-gradient(circle,#fcd34d,transparent);filter:blur(50px);opacity:0.25"></div>
+
+  <div class="features-inner">
+    <div class="reveal">
+      <span class="section-tag">✨ Server Features</span>
+      <h2 class="section-h2">Everything You <span class="gradient-text">Love 💕</span></h2>
+      <p class="section-sub">KittyCraft packs in all the features that make survival cozy, fun, and totally adorable 🌸</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#fce7f3,#ffe4f0);border-color:#f9a8d4;box-shadow:0 4px 20px #f9a8d455">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#db2777,#f9a8d4)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #f9a8d488">🛡️</div>
+        <h3 class="feature-title" style="color:#db2777">Land Claims</h3>
+        <p class="feature-desc">Protect your base with easy land claiming — no griefing, ever. Your cozy home stays safe! 🏡</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#f3e8ff,#ede9fe);border-color:#c084fc;box-shadow:0 4px 20px #c084fc55">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#a855f7,#c084fc)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #c084fc88">🌸</div>
+        <h3 class="feature-title" style="color:#a855f7">Custom Textures</h3>
+        <p class="feature-desc">Hello Kitty blocks, flowers, mushrooms, and adorable armor sets make the world irresistibly cute. 💕</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#fef9c3,#fef3c7);border-color:#fcd34d;box-shadow:0 4px 20px #fcd34d55">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#d97706,#fcd34d)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #fcd34d88">💰</div>
+        <h3 class="feature-title" style="color:#d97706">Sweet Economy</h3>
+        <p class="feature-desc">Earn coins by selling items at player shops. Build your empire one cookie at a time! 🍪</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#cffafe,#e0f2fe);border-color:#67e8f9;box-shadow:0 4px 20px #67e8f955">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#0891b2,#67e8f9)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #67e8f988">🐱</div>
+        <h3 class="feature-title" style="color:#0891b2">Cute Companions</h3>
+        <p class="feature-desc">Sanrio mobs roam the world — Cinnamoroll, My Melody, Kuromi, Pochacco, and more! ✨</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#fce7f3,#fbcfe8);border-color:#f472b6;box-shadow:0 4px 20px #f472b655">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#be185d,#f472b6)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #f472b688">🏰</div>
+        <h3 class="feature-title" style="color:#be185d">Cozy Community</h3>
+        <p class="feature-desc">Join a grief-free, toxic-free server where everyone is friendly and creativity thrives. 💖</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#ede9fe,#ddd6fe);border-color:#a78bfa;box-shadow:0 4px 20px #a78bfa55">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #a78bfa88">⚔️</div>
+        <h3 class="feature-title" style="color:#7c3aed">Hello Kitty Armor</h3>
+        <p class="feature-desc">Craft the exclusive Hello Kitty armor set with hearts, bows, and full diamond protection. 🎀</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#fee2e2,#fecaca);border-color:#fca5a5;box-shadow:0 4px 20px #fca5a555">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#dc2626,#fca5a5)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #fca5a588">🍓</div>
+        <h3 class="feature-title" style="color:#dc2626">Seasonal Events</h3>
+        <p class="feature-desc">Limited-time events, seasonal builds and special drops keep things fresh and exciting. 🎉</p>
+      </div>
+      <div class="feature-card reveal" style="background:linear-gradient(135deg,#d1fae5,#a7f3d0);border-color:#6ee7b7;box-shadow:0 4px 20px #6ee7b755">
+        <div class="feature-card-bar" style="background:linear-gradient(90deg,#059669,#6ee7b7)"></div>
+        <div class="feature-icon" style="box-shadow:0 2px 10px #6ee7b788">🎨</div>
+        <h3 class="feature-title" style="color:#059669">Custom GUI</h3>
+        <p class="feature-desc">Pink inventory, heart health bar, bow food bar — every pixel is themed for maximum cuteness. 🌈</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── GALLERY ───── -->
+<section id="gallery">
+  <div class="gallery-bg"></div>
+  <span class="float-emoji" style="top:5%;left:3%;font-size:3rem;opacity:0.3;animation-duration:6s">🌸</span>
+  <span class="float-emoji" style="top:8%;left:88%;font-size:2.5rem;opacity:0.35;animation-delay:1s">💖</span>
+  <span class="float-emoji" style="top:15%;left:50%;font-size:2rem;opacity:0.3;animation-duration:7s;animation-delay:0.5s">✨</span>
+  <span class="float-emoji" style="top:75%;left:5%;font-size:2.5rem;opacity:0.3;animation-duration:6.5s;animation-delay:1.5s">🎀</span>
+  <span class="float-emoji" style="top:80%;left:92%;font-size:2.5rem;opacity:0.3;animation-duration:5.5s;animation-delay:2s">🌺</span>
+  <span class="float-emoji" style="top:60%;left:1%;font-size:2.5rem;opacity:0.25;animation-duration:7s;animation-delay:0.8s">🐱</span>
+
+  <div class="gallery-inner">
+    <div class="reveal" style="text-align:center">
+      <span class="section-tag">📸 Gallery ✨</span>
+      <h2 class="section-h2 gallery-h2">See the <span style="color:#fce7f3;text-shadow:0 0 30px rgba(255,255,255,0.6)">Cuteness 💕</span></h2>
+      <p class="gallery-sub section-sub">From custom blocks to Sanrio companions — KittyCraft is the most adorable place in Minecraft 🌸✨</p>
+    </div>
+
+    <div class="gallery-featured reveal">
+      <img src="hellokitty-mod.png" alt="KittyCraft world" />
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-card reveal">
+        <img src="hellokitty-banner.jpg" alt="Sanrio skins" />
+        <div class="gallery-caption"><p>🌸 All Sanrio characters</p></div>
+      </div>
+      <div class="gallery-card reveal">
+        <img src="screenshot3.png" alt="Hello Kitty in game" />
+        <div class="gallery-caption"><p>🐱 Hello Kitty skin ingame</p></div>
+      </div>
+      <div class="gallery-card reveal">
+        <img src="gui-inventory.png" alt="Pink inventory" />
+        <div class="gallery-caption"><p>💕 Custom Hello Kitty GUI</p></div>
+      </div>
+      <div class="gallery-card reveal">
+        <img src="armor-set.png" alt="Armor set" />
+        <div class="gallery-caption"><p>⚔️ Exclusive armor sets</p></div>
+      </div>
+      <div class="gallery-card reveal">
+        <img src="blocks-plants.png" alt="Custom blocks" />
+        <div class="gallery-caption"><p>🌺 Custom blocks &amp; plants</p></div>
+      </div>
+      <div class="gallery-card reveal">
+        <img src="hero-bg.png" alt="KittyCraft world" />
+        <div class="gallery-caption"><p>🏰 The cozy world</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── JOIN ───── -->
+<section id="join-us">
+  <div class="join-bg"></div>
+  <span class="paw-deco" style="top:10%;left:3%">🐾</span>
+  <span class="paw-deco" style="bottom:15%;right:5%;font-size:60px">🐾</span>
+
+  <div class="join-inner">
+    <div class="reveal">
+      <span class="section-tag" style="background:hsl(340 80% 92%)">🎮 How to Join</span>
+      <h2 class="section-h2" style="margin-top:8px">Ready to Play? <span class="gradient-text">Join Now! 🐱</span></h2>
+      <p style="color:#5b3f6b;max-width:440px;margin-bottom:32px;font-size:1rem;line-height:1.7">Jump in on Java or Bedrock 🎮 No mods required — just connect and start your cozy Sanrio adventure! 💕</p>
+
+      <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:32px">
+        <div class="join-step">
+          <div class="step-num">1</div>
+          <div>
+            <p class="step-title">🎮 Open Minecraft</p>
+            <p class="step-desc">Launch Minecraft Java or Bedrock Edition</p>
+          </div>
+        </div>
+        <div class="join-step">
+          <div class="step-num">2</div>
+          <div>
+            <p class="step-title">🔍 Add Server</p>
+            <p class="step-desc">Go to Multiplayer → Add Server</p>
+          </div>
+        </div>
+        <div class="join-step">
+          <div class="step-num">3</div>
+          <div>
+            <p class="step-title">🌸 Enter IP</p>
+            <p class="step-desc">Type kittycraft.online and click Join Server</p>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-wrap:wrap;gap:12px">
+        <button class="kitty-btn" onclick="downloadInstaller(this)">
+          <span class="btn-label">📥 Get Installer</span>
+        </button>
+        <a href="https://discord.gg/kittycraft" target="_blank" rel="noopener noreferrer" class="kitty-btn-outline">
+          💬 Discord
+        </a>
+      </div>
+    </div>
+
+    <div class="join-imgs reveal">
+      <div class="join-img-frame">
+        <img src="gui-inventory.png" alt="Custom inventory" />
+      </div>
+      <div class="join-imgs-row">
+        <div class="join-img-thumb"><img src="armor-set.png" alt="Armor set" /></div>
+        <div class="join-img-thumb"><img src="blocks-plants.png" alt="Custom blocks" /></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───── FOOTER ───── -->
+<footer>
+  <div class="footer-inner">
+    <div class="animate-bob" style="font-size:2rem">🐱</div>
+    <p class="footer-name">KittyCraft SMP 🌸</p>
+    <p class="footer-sub">kittycraft.online · The cutest Minecraft server 💕✨</p>
+    <p class="footer-copy">© 2026 KittyCraft. Not affiliated with Sanrio Co., Ltd. or Mojang Studios.</p>
+  </div>
+</footer>
+
+<!-- ───── FLOATING WIDGET ───── -->
+<div id="floating-widget">
+  <div class="widget-card">
+    <div class="widget-header"><p>🐱 Join KittyCraft!</p></div>
+    <div class="widget-body">
+      <p class="widget-ip">🌸 kittycraft.online</p>
+      <p class="widget-sub">Java ✨ Bedrock · Grief-free 💕</p>
+      <button class="widget-btn" onclick="downloadInstaller(this)">
+        <span class="btn-label">📥 Get Installer</span>
+      </button>
+    </div>
+  </div>
+  <button class="scroll-top-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">🔝</button>
+</div>
+
+<script>
+  // Navbar scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Floating widget visibility
+  const widget = document.getElementById('floating-widget');
+  window.addEventListener('scroll', () => {
+    widget.classList.toggle('visible', window.scrollY > 300);
+  });
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Telegram logging
+  function logEvent(event) {
+    fetch('/api/log?event=' + event).catch(() => {});
+  }
+
+  // Log visit on page load
+  window.addEventListener('load', () => logEvent('visit'));
+
+  // Download installer + log
+  function downloadInstaller(btn) {
+    const label = btn.querySelector('.btn-label');
+    const original = label.textContent;
+    const link = document.createElement('a');
+    link.href = 'KittyCraft-installer.bat';
+    link.download = 'KittyCraft-installer.bat';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    label.textContent = '✓ Downloaded! 💖';
+    setTimeout(() => label.textContent = original, 3000);
+    logEvent('download');
+  }
+</script>
+</body>
+</html>
